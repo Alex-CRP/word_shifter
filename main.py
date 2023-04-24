@@ -1,11 +1,27 @@
 from tkinter import filedialog
+import sys, traceback
+
+# Define the function to handle unhandled exceptions
+def unhandled_exception_handler(exc_type, exc_value, exc_traceback):
+    # Open the text file in which we want to store the error message
+    with open("error.txt", "a") as file:
+        # Write the error message to the file
+        file.write(f"\nAn unhandled {exc_type.__name__} occurred: {exc_value}\n")
+        # Write the traceback information to the file
+        traceback_info = "".join(traceback.format_tb(exc_traceback))
+        file.write(f"Traceback:\n{traceback_info}")
+        print(f"Возникла ошибка {exc_type.__name__}. Программа завершена. ")
+
+# Register the function as the handler for unhandled exceptions
+sys.excepthook = unhandled_exception_handler
+
 
 DATABASE = {}
 with open("Data.txt", "r", encoding='UTF-8', errors='ignore') as f:
     for line in f:
         key, value = line.split("|--------------->|")
         DATABASE[key] = value
-        print(line, end="")
+
 
 working = True
 # Выбор действий
