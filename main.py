@@ -1,4 +1,4 @@
-from tkinter import filedialog
+﻿from tkinter import filedialog
 import sys, traceback
 
 # Define the function to handle unhandled exceptions
@@ -17,9 +17,9 @@ sys.excepthook = unhandled_exception_handler
 
 
 DATABASE = {}
-with open("Data.txt", "r", encoding='UTF-8', errors='ignore') as f:
+with open("Data.txt", "r", encoding='windows-1251', errors='ignore') as f:
     for line in f:
-        key, value = line.split("|--------------->|")
+        key, value = line.split("]--------------->[")
         DATABASE[key] = value
 
 
@@ -42,11 +42,13 @@ while working:
     if choice == 1:
 
         filepath = filedialog.askopenfilename()
-        with open(filepath, "r", encoding='UTF-8') as file:
+        with open(filepath, "r", encoding='windows-1251') as file:
             variable = file.read()
+            DATABASE = sorted(DATABASE.items(), key=lambda x: len(x[0]), reverse=True)
+            DATABASE = dict(DATABASE)
             for k, v in DATABASE.items():
-                variable = variable.replace(k, str(v).rstrip("\n"))
-        with open(filepath, "w", encoding='UTF-8') as file:
+                variable = variable.replace(k.lstrip("["), v.rstrip("]\n"))
+        with open(filepath, "w", encoding='windows-1251') as file:
             file.writelines(variable)
         print("Готово")
 
@@ -69,12 +71,12 @@ while working:
                     if choice == 1:
                         temp_key = input("Введите, что будет заменяться: ")
                         temp_value = input("Введите на что будет заменяться: ")
-                        DATABASE.update([(temp_key, temp_value + "\n")])
+                        DATABASE.update([("[" + temp_key, temp_value + "]\n")])
                     elif choice == 2:
                         DATABASE.pop(input("Введите, что больше не будет заменяться: "))
                     elif choice == 3:
                         for k, v in DATABASE.items():
-                            print(f'"{k}" заменяется на "{v}"\n')
+                            print(f'{k}] заменяется на [{v}\n')
                     elif choice == 4:
                         DATABASE.clear()
                         print("База очищена")
@@ -90,8 +92,8 @@ while working:
         break
 
 
-    with open("Data.txt", "w", encoding='UTF-8') as file:
+    with open("Data.txt", "w", encoding='windows-1251') as file:
         for key, value in DATABASE.items():
-            file.write(f'{key}|--------------->|{value}')
+            file.write(f'{key}]--------------->[{value}')
 
 input("Нажмите Enter для закрытия окна\n")
