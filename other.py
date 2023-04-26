@@ -13,6 +13,7 @@ def unhandled_exception_handler(exc_type, exc_value, exc_traceback):
         traceback_info = "".join(traceback.format_tb(exc_traceback))
         file.write(f"Traceback:\n{traceback_info}")
         print(f"Возникла ошибка {exc_type.__name__}. Программа завершена. ")
+        input("Нажмите Enter для закрытия окна\n")
 
 
 ### MESSAGES

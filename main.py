@@ -20,15 +20,15 @@ with open("Data.txt", "r", encoding='windows-1251', errors='ignore') as f:
                 DATABASE["[" + (key.lstrip("["))] = value.rstrip("]\n") + "]"
 
 
-# Выбор действий
+# Выбор действий: 1) Форматирование текста 2) Изменение базы 3) Выход из программы
 
 working = True
 while working:
     while True:
         try:
-            choice = int(input("1) Хочу отформатировать текст\n"
-                               "2) Хочу скорректировать базу для замен\n"
-                               "3) Хочу выйти из программы\n"))
+            choice = int(input("1) Отформатировать текст\n"
+                               "2) Скорректировать базу для замен\n"
+                               "3) Выйти из программы\n"))
             if choice not in [1, 2, 3]:
                 raise ValueError()
             break
@@ -42,10 +42,16 @@ while working:
         filepath = filedialog.askopenfilename()
         with open(filepath, "r", encoding='windows-1251') as file:
             variable = file.read()
+            previous_variable = variable
             DATABASE = sorted(DATABASE.items(), key=lambda x: len(x[0]), reverse=True)
             DATABASE = dict(DATABASE)
-            for k, v in DATABASE.items():
-                variable = variable.replace(k.lstrip("["), v.rstrip("]\n"))
+            while True:
+                for k, v in DATABASE.items():
+                    variable = variable.replace(k.lstrip("["), v.rstrip("]\n"))
+                if previous_variable == variable:
+                    break
+                else:
+                    previous_variable = variable
         with open(filepath, "w", encoding='windows-1251') as file:
             file.writelines(variable)
         print("Готово")
@@ -88,9 +94,13 @@ while working:
 
             except ValueError:
                 print("Ожидается \"1\", \"2\", \"3\", \"4\", \"5\" или \"6\"")
+
+    # Выход из программы
+
     elif choice == 3:
         break
 
+# Записываем данные в базу данных
 
 with open("Data.txt", "w", encoding='windows-1251') as file:
     for key, value in DATABASE.items():
