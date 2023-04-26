@@ -1,30 +1,28 @@
 ﻿from tkinter import filedialog
-import sys, traceback
-
-# Define the function to handle unhandled exceptions
-def unhandled_exception_handler(exc_type, exc_value, exc_traceback):
-    # Open the text file in which we want to store the error message
-    with open("error.txt", "a") as file:
-        # Write the error message to the file
-        file.write(f"\nAn unhandled {exc_type.__name__} occurred: {exc_value}\n")
-        # Write the traceback information to the file
-        traceback_info = "".join(traceback.format_tb(exc_traceback))
-        file.write(f"Traceback:\n{traceback_info}")
-        print(f"Возникла ошибка {exc_type.__name__}. Программа завершена. ")
+from other import unhandled_exception_handler, change_warning
+import sys
 
 # Register the function as the handler for unhandled exceptions
 sys.excepthook = unhandled_exception_handler
 
+# Чтение базы данных
 
 DATABASE = {}
 with open("Data.txt", "r", encoding='windows-1251', errors='ignore') as f:
     for line in f:
-        key, value = line.split("]--------------->[")
-        DATABASE[key] = value
+        try:
+            key, value = line.split("]--------------->[")
+            DATABASE["[" + (key.lstrip("["))] = value.rstrip("]\n") + "]"
+        except ValueError:
+            temp_line = line.split("][")
+            for block in temp_line:
+                key, value = block.split("]--------------->[")
+                DATABASE["[" + (key.lstrip("["))] = value.rstrip("]\n") + "]"
 
+
+# Выбор действий
 
 working = True
-# Выбор действий
 while working:
     while True:
         try:
@@ -52,7 +50,6 @@ while working:
             file.writelines(variable)
         print("Готово")
 
-
     # 2) Изменение базы
 
     elif choice == 2:
@@ -69,14 +66,17 @@ while working:
                 else:
 
                     if choice == 1:
+                        print(change_warning)
                         temp_key = input("Введите, что будет заменяться: ")
                         temp_value = input("Введите на что будет заменяться: ")
-                        DATABASE.update([("[" + temp_key, temp_value + "]\n")])
+                        DATABASE.update([("[" + temp_key, temp_value + "]")])
                     elif choice == 2:
                         DATABASE.pop(input("Введите, что больше не будет заменяться: "))
                     elif choice == 3:
+                        i = 1
                         for k, v in DATABASE.items():
-                            print(f'{k}] заменяется на [{v}\n')
+                            print(f'{i}) {k}] заменяется на [{v}\n')
+                            i += 1
                     elif choice == 4:
                         DATABASE.clear()
                         print("База очищена")
@@ -92,8 +92,8 @@ while working:
         break
 
 
-    with open("Data.txt", "w", encoding='windows-1251') as file:
-        for key, value in DATABASE.items():
-            file.write(f'{key}]--------------->[{value}')
+with open("Data.txt", "w", encoding='windows-1251') as file:
+    for key, value in DATABASE.items():
+        file.write(f'{key}]--------------->[{value}\n')
 
 input("Нажмите Enter для закрытия окна\n")
