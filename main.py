@@ -13,6 +13,10 @@ with open("Data.txt", "r", encoding='windows-1251', errors='ignore') as f:
         try:
             key, value = line.split("]--------------->[")
             DATABASE["[" + (key.lstrip("["))] = value.rstrip("]\n") + "]"
+
+            # Если в строчке 2 и более пары ключ-значение,
+            # возникает исключение для корректного их разделения
+
         except ValueError:
             temp_line = line.split("][")
             for block in temp_line:
@@ -27,7 +31,7 @@ while working:
     while True:
         try:
             choice = int(input("1) Отформатировать текст\n"
-                               "2) Скорректировать базу для замен\n"
+                               "2) Скорректировать базу замен\n"
                                "3) Выйти из программы\n"))
             if choice not in [1, 2, 3]:
                 raise ValueError()
@@ -45,6 +49,9 @@ while working:
             previous_variable = variable
             DATABASE = sorted(DATABASE.items(), key=lambda x: len(x[0]), reverse=True)
             DATABASE = dict(DATABASE)
+
+            # Бегает по тексту пока не убедиться, что больше нечего менять
+
             while True:
                 for k, v in DATABASE.items():
                     variable = variable.replace(k.lstrip("["), v.rstrip("]\n"))
@@ -52,6 +59,7 @@ while working:
                     break
                 else:
                     previous_variable = variable
+
         with open(filepath, "w", encoding='windows-1251') as file:
             file.writelines(variable)
         print("Готово")
@@ -77,7 +85,7 @@ while working:
                         temp_value = input("Введите на что будет заменяться: ")
                         DATABASE.update([("[" + temp_key, temp_value + "]")])
                     elif choice == 2:
-                        DATABASE.pop(input("Введите, что больше не будет заменяться: "))
+                        DATABASE.pop("[" + input("Введите, что больше не будет заменяться: "))
                     elif choice == 3:
                         i = 1
                         for k, v in DATABASE.items():
@@ -95,7 +103,7 @@ while working:
             except ValueError:
                 print("Ожидается \"1\", \"2\", \"3\", \"4\", \"5\" или \"6\"")
 
-    # Выход из программы
+    # 3) Выход из программы
 
     elif choice == 3:
         break
