@@ -72,10 +72,9 @@ while working:
                 choice = int(input("1) Добавить замену\n"
                                    "2) Убрать замену\n"
                                    "3) Посмотреть список замен\n"
-                                   "4) Удалить все замены из БД\n"
-                                   "5) Вернуться на уровень выше\n"
-                                   "6) Завершить работу программы\n"))
-                if choice not in [1, 2, 3, 4, 5, 6]:
+                                   "4) Вернуться на уровень выше\n"
+                                   "5) Завершить работу программы\n"))
+                if choice not in [1, 2, 3, 4, 5]:
                     raise ValueError()
                 else:
 
@@ -87,14 +86,17 @@ while working:
                     elif choice == 2:
                         DATABASE.pop("[" + input("Введите, что больше не будет заменяться: "))
                     elif choice == 3:
-                        i = 1
+                        if DATABASE == dict():
+                            print("В базе данных еще нет замен!\n")
+                        else:
+                            i = 1
                         for k, v in DATABASE.items():
                             print(f'{i}) {k}] заменяется на [{v}\n')
                             i += 1
+                    # elif choice == 4:
+                    #     DATABASE.clear()
+                    #     print("База очищена")
                     elif choice == 4:
-                        DATABASE.clear()
-                        print("База очищена")
-                    elif choice == 5:
                         break
                     else:
                         working = False
